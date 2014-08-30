@@ -14,11 +14,19 @@ for directive in directives:
     outfiles.append(output)
 
     # For each directive, re-encode the source videos to little snippets, and apply whatever speed directive.
-    #   ffmpeg -i SOURCE.mp4 -ss STARTTIMEs -t DURATIONs -filter:v "setpts=SPEEDMULTIPLIER*PTS" -acodec copy -vcodec copy OUTPUT.mp4
-    #       -ss and -t are either hh:mm:ss.sss or whole seconds.
-    #       SPEEDMULTIPLIER is a backwards. 0.5 to speed up, 2.0 to slow down.
-    print("ffmpeg -ss {starttime} -i {filename} -t {duration} -filter:v setpts={speed}*PTS -acodec copy -vcodec copy {output}".format(starttime=starttime, filename=filename, duration=duration, speed=speed, output=output))
+    print("ffmpeg -y -ss {starttime} -i {filename} -t {duration} -q:v 1 -an -vcodec mpeg4 {output}".format(starttime=starttime, filename=filename, duration=duration, speed=speed, output="clip"+output))
+    print("ffmpeg -y -i {filename} -filter:v \"setpts={speed}*PTS\" -an {output}".format(starttime=starttime, filename="clip"+output, duration=duration, speed=speed, output=output))
+    print("rm clip"+output)
 
 # Optional: Overlay a "FFWD" text in the corner for fun.
 
 # Concatenate them all back together.
+with open(".finalvids.txt", 'w') as f:
+    for line in outfiles:
+        f.write("file '{}'\n".format(line))
+print("ffmpeg -y -f concat -i .finalvids.txt -c copy final.mp4")
+print("rm .finalvids.txt")
+
+# Clean up
+for line in outfiles:
+    print("rm "+ line)
