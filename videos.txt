@@ -1,3 +1,0 @@
-VIDEO.avi:0,14,1
-VIDEO.avi:14,96,0.5
-VIDEO.avi:96,106,1

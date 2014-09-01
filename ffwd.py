@@ -1,16 +1,28 @@
 # Reads an input file with directives about where to fast forward.
-with open("videos.txt", 'r') as f:
-    directives = f.readlines()
+import json
+directives = json.loads(open("videos.json", 'r').read())
 
 outfiles = []
+starttime = 0
+endtime = 0
+speed = 1
 for directive in directives:
-    directive = directive.strip()
-    # Filename:Starttime,endtime,speed
+    filename = directive.get('file')
     # (times are relative to the filename, and in seconds.)
-    filename, times = directive.split(":")
-    starttime, endtime, speed = times.split(",")
+    # Check if key is present, if not, use any previous setting.
+    # If start is missing, use previous end.
+    if "start" in directive:
+        starttime = directive['start']
+    else:
+        starttime = endtime
+
+    if "end" in directive:
+        endtime = directive['end']
+    if "speed" in directive:
+        speed = directive['speed']
+
     duration = int(endtime) - int(starttime)
-    output = '-'.join((filename, starttime, endtime, speed, ".mp4"))
+    output = '-'.join((filename, str(starttime), str(endtime), str(speed), ".mp4"))
     outfiles.append(output)
 
     # For each directive, re-encode the source videos to little snippets, and apply whatever speed directive.
@@ -19,6 +31,7 @@ for directive in directives:
     print("rm clip"+output)
 
 # Optional: Overlay a "FFWD" text in the corner for fun.
+# TODO: If there's a gap, it should ramp up linearly.
 
 # Concatenate them all back together.
 with open(".finalvids.txt", 'w') as f:

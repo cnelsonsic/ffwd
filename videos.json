@@ -1,0 +1,5 @@
+[
+    {"file": "VIDEO.avi", "start": 0, "end": 14, "speed": 1},
+    {"file": "VIDEO.avi", "end": 24, "speed": 0.5},
+    {"file": "VIDEO.avi", "start": 10, "end": 12},
+]
